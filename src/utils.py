@@ -101,11 +101,11 @@ async def lookup_food_fatsecret(name: str) -> Optional[Dict]:
 async def build_daily_charts(day: DayRecord) -> io.BytesIO:
     fig, axes = plt.subplots(2, 1, figsize=(9, 10))
 
-    water_actual = day.water_consumed_ml
-    water_target = day.water_target_ml
+    water_actual = day.logged_water
+    water_target = day.water_goal
 
-    calorie_net = day.calories_eaten - day.calories_burned
-    calorie_target = day.calorie_target
+    calorie_net = day.logged_calories - day.water_goal
+    calorie_target = day.calorie_goal
 
     axes[0].bar(["actual", "target"], [water_actual, water_target])
     axes[0].set_title("Daily water balance (ml)")

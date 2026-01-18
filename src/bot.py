@@ -51,12 +51,9 @@ class UserProfileGuardMiddleware(BaseMiddleware):
             message_text.startswith(cmd) for cmd in allowed_commands
         )
 
-        is_profile_state = (
-            isinstance(data.get("state"), UserProfileFSM) or
-            (current_state and current_state.startswith("ProfileSetup"))
-        )
+        is_in_profile_fsm = current_state and current_state.startswith("UserProfileFSM")
 
-        if is_allowed_command or is_profile_state:
+        if is_allowed_command or is_in_profile_fsm:
             return await handler(event, data)
 
         if uid not in users:
@@ -469,13 +466,13 @@ async def send_progress_charts(message: Message):
             filename="progress_charts.png"
         )
 
-        calories_balance = today_stats.logged_calories - today_stats.calorie_goal - today_stats.burned_calories
+        calories_balance = today_stats.logged_calories - today_stats.calorie_goal - today_stats.water_goal
 
         caption_lines = [
             "Прогресс за сегодня:",
             f"Вода: {today_stats.logged_water}/{today_stats.water_goal} мл",
             f"Калории: {today_stats.logged_calories}/{today_stats.calorie_goal} ккал",
-            f"Потрачено: {today_stats.burned_calories} ккал",
+            f"Потрачено: {today_stats.water_goal} ккал",
             f"Баланс (потреблено - BMR - потрачено): {calories_balance:.1f} ккал"
         ]
         caption_text = "\n".join(caption_lines)
@@ -523,7 +520,7 @@ async def handle_workout_logging(message: Message, command: CommandObject, state
         calories = WORKOUT_CALORIES[workout_type] * workout_duration
         water_needed = (workout_duration // 30) * WATER_PER_WORKOUT
 
-        current_stats.burned_calories += calories
+        current_stats.water_goal += calories
         current_stats.workout_log.append({
             "type": workout_type,
             "duration": workout_duration,
@@ -569,7 +566,7 @@ async def show_user_progress(message: Message):
         logger.error("Ошибка при получении температуры для прогресса: %s", e)
 
     water_remaining = max(0, today_stats.water_goal - today_stats.logged_water)
-    calories_balance = today_stats.logged_calories - today_stats.calorie_goal - today_stats.burned_calories
+    calories_balance = today_stats.logged_calories - today_stats.calorie_goal - today_stats.water_goal
 
     progress_intro = "Прогресс за сегодня:\n"
     water_info = (
@@ -580,7 +577,7 @@ async def show_user_progress(message: Message):
     calories_info = (
         f"Калории:\n"
         f"- Потреблено: {today_stats.logged_calories} ккал из BMR = {today_stats.calorie_goal} ккал\n"
-        f"- Потрачено: {today_stats.burned_calories} ккал\n"
+        f"- Потрачено: {today_stats.water_goal} ккал\n"
         f"- Баланс (потреблено - BMR - потрачено): {calories_balance} ккал\n"
     )
 

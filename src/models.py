@@ -7,15 +7,15 @@ from config import WATER_PER_KG, WATER_PER_ACTIVITY, WATER_HOT_WEATHER
 
 @dataclass
 class DayRecord:
-    date_iso: str
-    water_consumed_ml: float = 0
-    calories_eaten: float = 0
-    calories_burned: float = 0
-    water_target_ml: float = 0
-    calorie_target: float = 0
-    temperature_celsius: float = 0
-    meals: List[Dict] = field(default_factory=list)
-    workouts: List[Dict] = field(default_factory=list)
+    date: str
+    logged_water: float = 0
+    logged_calories: float = 0
+    burned_calories: float = 0
+    water_goal: float = 0
+    calorie_goal: float = 0
+    temperature: float = 0
+    food_log: List[Dict] = field(default_factory=list)
+    workout_log: List[Dict] = field(default_factory=list)
 
 
 @dataclass
@@ -26,7 +26,7 @@ class UserProfile:
     age: int
     activity_minutes: int
     city: str
-    days: Dict[str, DayRecord] = field(default_factory=dict)
+    daily_stats: Dict[str, DayRecord] = field(default_factory=dict)
 
     def _today_key(self) -> str:
         return datetime.now().date().isoformat()
@@ -36,9 +36,9 @@ class UserProfile:
 
         key = self._today_key()
 
-        if key not in self.days:
-            record = DayRecord(date_iso=key)
-            self.days[key] = record
+        if key not in self.daily_stats:
+            record = DayRecord(date=key)
+            self.daily_stats[key] = record
 
             from utils import fetch_city_temperature
             from config import WEATHER_API_KEY
@@ -48,7 +48,7 @@ class UserProfile:
 
             self.recalculate_targets(temp)
 
-        return self.days[key]
+        return self.daily_stats[key]
 
     def water_target(self, temperature: float) -> float:
         base = self.weight * WATER_PER_KG
@@ -62,7 +62,7 @@ class UserProfile:
         return base + activity_bonus
 
     def recalculate_targets(self, temperature: float) -> None:
-        record = self.days[self._today_key()]
-        record.water_target_ml = self.water_target(temperature)
-        record.calorie_target = self.calorie_target()
-        record.temperature_celsius = temperature
+        record = self.daily_stats[self._today_key()]
+        record.water_goal = self.water_target(temperature)
+        record.calorie_goal = self.calorie_target()
+        record.temperature = temperature
