@@ -33,16 +33,17 @@ Telegram-бот для здоровья и фитнеса, который пом
 
 ## Структура проекта
 
-.
-├── src/
-│ ├── bot.py # Основная логика бота и обработчики команд
-│ ├── config.py # Конфигурация, переменные окружения, константы и логгер
-│ ├── models.py # Модели данных (UserProfile, DayRecord)
-│ └── utils.py # Вспомогательные функции (API, расчёты, графики)
-├── .env # Переменные окружения (токены и ключи)
-├── requirements.txt # Python-зависимости
-├── Dockerfile # Dockerfile для сборки контейнера
-└── README.md # Этот файл
+```tree
+src/
+├── bot.py        # Основная логика бота и обработчики команд
+├── config.py     # Конфигурация, переменные окружения, константы и логгер
+├── models.py     # Модели данных (UserProfile, DayRecord)
+└── utils.py      # Вспомогательные функции (API, расчёты, графики)
+
+.env              # Переменные окружения (токены и ключи)
+requirements.txt  # Python-зависимости
+Dockerfile        # Dockerfile для сборки контейнера
+README.md         # Этот файл
 
 ---
 
@@ -104,29 +105,35 @@ Telegram-бот для здоровья и фитнеса, который пом
 
 1. Создайте файл `.env` с переменными:
 
-BOT_TOKEN=ваш_токен_бота
-WEATHER_API_KEY=ключ_OpenWeatherMap
-CONSUMER_KEY=ключ_FatSecret
-CONSUMER_SECRET=секрет_FatSecret
-LOG_LEVEL=DEBUG
+- BOT_TOKEN=ваш_токен_бота
+- WEATHER_API_KEY=ключ_OpenWeatherMap
+- CONSUMER_KEY=ключ_FatSecret
+- CONSUMER_SECRET=секрет_FatSecret
+- LOG_LEVEL=DEBUG
 
 2. Соберите контейнер и запустите бота:
 
-docker build -t fitness-bot .
-docker run -it --env-file .env fitness-bot
-Как работает бот
-Пользователь запускает /start.
-Затем выполняет /profile и вводит вес, рост, возраст, уровень активности и город.
-Бот рассчитывает нормы воды и калорий на день.
-Пользователь добавляет данные через /water, /food, /workout.
-Бот хранит статистику в памяти (в UserProfile.days) и показывает прогресс через /progress и /charts.
-История доступна через /history.
-Настройки и константы (config.py)
-WATER_PER_KG — мл воды на кг веса
-WATER_PER_ACTIVITY — мл воды на 30 минут активности
-WATER_PER_WORKOUT — мл воды на 30 минут тренировки
-WATER_HOT_WEATHER — бонус при температуре ≥26°C
-WORKOUT_CALORIES — калории, сжигаемые за минуту разных тренировок
-Хранение данных
-В памяти через словари users и UserProfile.days
-В будущем можно добавить базу данных для постоянного хранения
+- docker build -t fitness-bot .
+- docker run -it --env-file .env fitness-bot
+
+### Как работает бот
+
+- Пользователь запускает /start.
+- Затем выполняет /profile и вводит вес, рост, возраст, уровень активности и город.
+- Бот рассчитывает нормы воды и калорий на день.
+- Пользователь добавляет данные через /water, /food, /workout.
+- Бот хранит статистику в памяти (в UserProfile.days) и показывает прогресс через /progress и /charts.
+- История доступна через /history.
+
+### Настройки и константы (`config.py`)
+
+- WATER_PER_KG — мл воды на кг веса
+- WATER_PER_ACTIVITY — мл воды на 30 минут активности
+- WATER_PER_WORKOUT — мл воды на 30 минут тренировки
+- WATER_HOT_WEATHER — бонус при температуре ≥26°C
+- WORKOUT_CALORIES — калории, сжигаемые за минуту разных тренировок
+
+### Хранение данных
+
+- В памяти через словари users и UserProfile.days
+- В будущем можно добавить базу данных для постоянного хранения
