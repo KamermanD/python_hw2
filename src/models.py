@@ -63,6 +63,6 @@ class UserProfile:
 
     def recalculate_targets(self, temperature: float) -> None:
         record = self.daily_stats[self._today_key()]
-        record.water_goal = self.water_target(temperature)
+        record.water_goal =  self.water_target(temperature)
         record.calorie_goal = self.calorie_target()
         record.temperature = temperature

@@ -9,7 +9,6 @@ from config import BOT_TOKEN, WATER_PER_WORKOUT, WEATHER_API_KEY, WORKOUT_CALORI
 from aiogram import Bot, Dispatcher, Router, BaseMiddleware
 from models import UserProfile
 
-
 class UserProfileFSM(StatesGroup): 
     input_weight = State()
     input_height = State()
@@ -548,12 +547,12 @@ async def show_user_progress(message: Message):
 
     uid = message.from_user.id
     profile = users[uid]
-    today_stats = await profile.  today()
+    today_stats = await profile.today()
 
     try:
         current_temp = await fetch_city_temperature(profile.city, WEATHER_API_KEY)
         if current_temp is not None:
-            await profile.recalculate_targets(current_temp)
+            profile.recalculate_targets(current_temp)
 
             temp_diff = abs(current_temp - today_stats.temperature)
             if temp_diff > 5:
